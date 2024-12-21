@@ -1,0 +1,129 @@
+##########################
+# CONFIGURAÇÃO DA FÍSICA #
+##########################
+
+#s:Ph/ListName = "MyList"
+#b:Ph/ListProcesses = "False"
+#s:Ph/MyList/Type = "Geant4_Modular"
+#sv:Ph/MyList/Modules   = 7 "g4em-standard_opt4" "g4h-phy_QGSP_BIC_HP" "g4decay" "g4ion-binarycascade" "g4h-elastic_HP" "g4stopping" "g4em-dna_opt2"
+#d:Ph/MyList/EMRangeMin = 100. eV
+#d:Ph/MyList/EMRangeMax = 5. GeV
+
+
+############################
+# DEFINIÇÃO DAS GEOMETRIAS #
+############################
+
+s:Ge/World/Material  = "Vacuum"
+#s:Ge/World/Material  = "Air"
+s:Ge/World/Type      = "TsBox"
+d:Ge/World/HLX       = 2.5 m
+d:Ge/World/HLY       = 2.5 m
+d:Ge/World/HLZ       = 2.5 m
+b:Ge/World/Invisible = "True"
+
+s:Ge/Water/Type     = "TsBox"
+s:Ge/Water/Parent   = "World"
+s:Ge/Water/Material = "G4_WATER"
+d:Ge/Water/HLX      = 5. cm
+d:Ge/Water/HLY      = 5. cm
+d:Ge/Water/HLZ      = 15. cm
+i:Ge/Water/XBins    = 1
+i:Ge/Water/YBins    = 1
+i:Ge/Water/ZBins    = 1
+d:Ge/Water/RotX     = 180. deg
+d:Ge/Water/RotY     = 0. deg
+d:Ge/Water/RotZ     = 0. deg
+s:Ge/Water/Color    = "Blue"
+
+s:Ge/Dosimeter/Type       = "TsBox"
+s:Ge/Dosimeter/Parent     = "World"
+b:Ge/Dosimeter/IsParallel = "True"
+d:Ge/Dosimeter/HLX        = 3. cm
+d:Ge/Dosimeter/HLY        = 3. cm
+d:Ge/Dosimeter/HLZ        = 15. cm
+i:Ge/Dosimeter/XBins      = 1
+i:Ge/Dosimeter/YBins      = 1
+i:Ge/Dosimeter/ZBins      = 600
+d:Ge/Dosimeter/RotX       = 180. deg
+d:Ge/Dosimeter/RotY       = 0. deg
+d:Ge/Dosimeter/RotZ       = 0. deg
+d:Ge/Dosimeter/TransX     = 0. cm
+d:Ge/Dosimeter/TransY     = 0. cm
+d:Ge/Dosimeter/TransZ     = 0. cm
+
+
+#############
+# AQUISIÇÃO #
+#############
+
+s:Sc/val_carbon/Quantity                  = "EnergyDeposit"
+s:Sc/val_carbon/Component                 = "Dosimeter"
+s:Sc/val_carbon/IfOutputFileAlreadyExists = "Overwrite"
+b:Sc/val_carbon/OutputToConsole           = "False"
+s:Sc/val_carbon/OutputFile                = "C_400"
+
+
+#########
+# FEIXE #
+#########
+
+s:Ge/BeamPosition/Parent = "World"
+s:Ge/BeamPosition/Type   = "Group"
+d:Ge/BeamPosition/TransX = 0. m
+d:Ge/BeamPosition/TransY = 0. m
+d:Ge/BeamPosition/TransZ = Ge/Water/HLZ + 100. cm
+d:Ge/BeamPosition/RotX   = 180. deg
+d:Ge/BeamPosition/RotY   = 0. deg
+d:Ge/BeamPosition/RotZ   = 0. deg
+
+s:So/ParticleSource/Type         = "Beam"
+s:So/ParticleSource/Component    = "BeamPosition"
+s:So/ParticleSource/BeamParticle = "GenericIon(6,12,6)"
+d:So/ParticleSource/BeamEnergy   = 4800 MeV
+
+s:So/ParticleSource/BeamPositionDistribution = "Flat"
+#s:So/ParticleSource/BeamPositionDistribution = "Gaussian"
+s:So/ParticleSource/BeamPositionCutoffShape  = "Ellipse"
+d:So/ParticleSource/BeamPositionCutoffX      = 0.25 cm
+d:So/ParticleSource/BeamPositionCutoffY      = 0.25 cm
+#d:So/ParticleSource/BeamPositionSpreadX      = 0.1 * So/ParticleSource/BeamPositionCutoffX cm
+#d:So/ParticleSource/BeamPositionSpreadY      = 0.1 * So/ParticleSource/BeamPositionCutoffY cm
+
+s:So/ParticleSource/BeamAngularDistribution = "None"
+#s:So/ParticleSource/BeamAngularDistribution = "Gaussian"
+#d:So/ParticleSource/BeamAngularCutoffX      = 0.1 deg
+#d:So/ParticleSource/BeamAngularCutoffY      = 0.1 deg
+#d:So/ParticleSource/BeamAngularSpreadX      = 0.18 deg
+#d:So/ParticleSource/BeamAngularSpreadY      = 0.18 deg
+
+
+#############
+# HISTÓRIAS #
+#############
+
+i:So/ParticleSource/NumberOfHistoriesInRun   = 100 * Ts/ShowHistoryCountAtInterval
+i:Ts/ShowHistoryCountAtInterval              = 10
+
+
+#####################
+# OUTROS PARÂMETROS #
+#####################
+
+i:Ts/NumberOfThreads = 0
+
+#b:Ts/UseQt = "True"
+
+#u:Gr/ViewA/Zoom        = 1
+#s:Gr/ViewA/Type        = "OpenGL"
+#i:Gr/ViewA/WindowSizeX = 900
+#i:Gr/ViewA/WindowSizeY = 900
+#d:Gr/ViewA/Theta       = 60 deg
+#d:Gr/ViewA/Phi         = 30 deg
+#i:Gr/ShowOnlyOutlineIfVoxelCountExceeds = 1
+
+#b:Ts/PauseBeforeQuit = "True"
+
+i:Ts/Seed = 10
+
+

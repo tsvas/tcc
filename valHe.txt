@@ -1,0 +1,155 @@
+##########################
+# CONFIGURAÇÃO DA FÍSICA #
+##########################
+
+# Enquanto as linhas 7~12 estiverem comentadas, o TOPAS irá usar a física padrão.
+# Para usar a física adaptada, basta descomentar as linhas antes de rodar a simulação.
+
+#s:Ph/ListName          = "MyList"
+#b:Ph/ListProcesses     = "False" # "True" para mostrar os processos dos módulos de física no terminal.
+#s:Ph/MyList/Type       = "Geant4_Modular"
+#sv:Ph/MyList/Modules   = 7 "g4em-standard_opt4" "g4h-phy_QGSP_BIC_HP" "g4decay" "g4ion-binarycascade" "g4h-elastic_HP" "g4stopping" "g4em-dna_opt2"
+#d:Ph/MyList/EMRangeMin = 100. eV
+#d:Ph/MyList/EMRangeMax = 5. GeV
+
+
+############################
+# DEFINIÇÃO DAS GEOMETRIAS #
+############################
+
+# Os valores de HLX, HLY e HLZ correspondem à metade do tamanho da geometria em cada eixo.
+# Assim, é mais simples imaginar o posicionamento dos sólidos no espaço de simulação.
+# Por esse motivo, as rotações em 180 graus tanto nas geometrias como nos feixes são necessárias.
+# Experimente manter o fantoma e, depois, o dosímetro sem rotação no eixo x. Veja se há diferença em algum deles.
+
+# Definição do mundo de simulação.
+
+s:Ge/World/Material  = "Vacuum"
+s:Ge/World/Type      = "TsBox"
+d:Ge/World/HLX       = 2.5 m
+d:Ge/World/HLY       = 2.5 m
+d:Ge/World/HLZ       = 2.5 m
+b:Ge/World/Invisible = "True"
+
+# Definição do fantoma de água.
+
+s:Ge/Water/Type     = "TsBox"
+s:Ge/Water/Parent   = "World"
+s:Ge/Water/Material = "G4_WATER"
+d:Ge/Water/HLX      = 5. cm
+d:Ge/Water/HLY      = 5. cm
+d:Ge/Water/HLZ      = 15. cm
+i:Ge/Water/XBins    = 1
+i:Ge/Water/YBins    = 1
+i:Ge/Water/ZBins    = 1
+d:Ge/Water/RotX     = 180. deg
+d:Ge/Water/RotY     = 0. deg
+d:Ge/Water/RotZ     = 0. deg
+s:Ge/Water/Color    = "Blue"
+
+# Definição do dosímetro.
+
+s:Ge/Dosimeter/Type       = "TsBox"
+s:Ge/Dosimeter/Parent     = "World"
+b:Ge/Dosimeter/IsParallel = "True" # Dosímetro ideal
+d:Ge/Dosimeter/HLX        = 0.5 cm
+d:Ge/Dosimeter/HLY        = 0.5 cm
+d:Ge/Dosimeter/HLZ        = 15. cm
+i:Ge/Dosimeter/XBins      = 1
+i:Ge/Dosimeter/YBins      = 1
+i:Ge/Dosimeter/ZBins      = 300 # O número de bins em relação ao tamanho do dosímetro no eixo de irradiação indica a resolução.
+d:Ge/Dosimeter/RotX       = 180. deg
+d:Ge/Dosimeter/RotY       = 0. deg
+d:Ge/Dosimeter/RotZ       = 0. deg
+d:Ge/Dosimeter/TransX     = 0. cm
+d:Ge/Dosimeter/TransY     = 0. cm
+d:Ge/Dosimeter/TransZ     = 0. cm
+
+
+#############
+# AQUISIÇÃO #
+#############
+
+s:Sc/val_alpha/Quantity                  = "DoseToMedium"
+s:Sc/val_alpha/Component                 = "Dosimeter"
+s:Sc/val_alpha/IfOutputFileAlreadyExists = "Overwrite"
+b:Sc/val_alpha/OutputToConsole           = "False"
+s:Sc/val_alpha/OutputFile                = "STD_Alfas_800" # Dê um nome único para diferenciar uma simulação de outra.
+
+
+#########
+# FEIXE #
+#########
+
+# Definição do componente de Geometria do Feixe.
+
+s:Ge/BeamPosition/Parent = "World"
+s:Ge/BeamPosition/Type   = "Group"
+d:Ge/BeamPosition/TransX = 0. m
+d:Ge/BeamPosition/TransY = 0. m
+d:Ge/BeamPosition/TransZ = Ge/Water/HLZ + 100. cm
+d:Ge/BeamPosition/RotX   = 180. deg
+d:Ge/BeamPosition/RotY   = 0. deg
+d:Ge/BeamPosition/RotZ   = 0. deg
+
+# Definição da partícula e da energia.
+
+s:So/ParticleSource/Type         = "Beam"
+s:So/ParticleSource/Component    = "BeamPosition"
+s:So/ParticleSource/BeamParticle = "alpha"
+d:So/ParticleSource/BeamEnergy   = 800 MeV
+
+# Definição do formato do feixe.
+# Experimente configurações diferentes.
+
+s:So/ParticleSource/BeamPositionDistribution = "Flat"
+#s:So/ParticleSource/BeamPositionDistribution = "Gaussian"
+s:So/ParticleSource/BeamPositionCutoffShape  = "Ellipse"
+d:So/ParticleSource/BeamPositionCutoffX      = 1. cm
+d:So/ParticleSource/BeamPositionCutoffY      = 1. cm
+#d:So/ParticleSource/BeamPositionSpreadX      = 0.1 * So/ParticleSource/BeamPositionCutoffX cm
+#d:So/ParticleSource/BeamPositionSpreadY      = 0.1 * So/ParticleSource/BeamPositionCutoffY cm
+
+s:So/ParticleSource/BeamAngularDistribution = "None"
+#s:So/ParticleSource/BeamAngularDistribution = "Gaussian"
+#d:So/ParticleSource/BeamAngularCutoffX      = 0.1 deg
+#d:So/ParticleSource/BeamAngularCutoffY      = 0.1 deg
+#d:So/ParticleSource/BeamAngularSpreadX      = 0.18 deg
+#d:So/ParticleSource/BeamAngularSpreadY      = 0.18 deg
+
+
+#############
+# HISTÓRIAS #
+#############
+
+# O número de histórias indica o número de partículas primárias usadas na simulação.
+# Quanto maior o número de histórias, melhor será a estatística da simulação.
+# Experimente um menor número de histórias para uma resolução menor e um maior número para uma resolução maior. 
+
+i:So/ParticleSource/NumberOfHistoriesInRun   = 100 * Ts/ShowHistoryCountAtInterval
+i:Ts/ShowHistoryCountAtInterval              = 10
+
+#####################
+# OUTROS PARÂMETROS #
+#####################
+
+i:Ts/NumberOfThreads = -1 # Define o número de threads que o TOPAS pode usar nas simulações. "-x" indica todos, exceto x, "0" indica todos os disponíveis e "x" indica apenas x.
+
+# Definição do GUI para visualização das geometrias.
+# É recomendável ver se as suas geomerias estão sendo irradiadas da forma correta.
+# Antes de uma simulação com lato número de histórias, use o GUI para ver uma simulação de poucas histórias.
+
+#b:Ts/UseQt = "True"
+#u:Gr/ViewA/Zoom        = 1
+#s:Gr/ViewA/Type        = "OpenGL"
+#i:Gr/ViewA/WindowSizeX = 900
+#i:Gr/ViewA/WindowSizeY = 900
+#d:Gr/ViewA/Theta       = 60 deg
+#d:Gr/ViewA/Phi         = 30 deg
+#i:Gr/ShowOnlyOutlineIfVoxelCountExceeds = 1
+#b:Ts/PauseBeforeQuit = "True"
+
+
+i:Ts/Seed = 3 # A seed usada afeta os números que serão sorteados.
+
+
